@@ -65,11 +65,12 @@ int main(int argc, const char * argv[])
         
         NSString* storyboardName = [[storyboardPath lastPathComponent] stringByDeletingPathExtension];
         
-        NSString* defauldOutputFilename = [storyboardName stringByAppendingString:@"Segue"];
+        NSString* defaultOutputFilename = [storyboardName stringByAppendingString:@"Segue"];
 
-        NSString* defaultOutput = [[storyboardPath stringByDeletingLastPathComponent] stringByAppendingPathComponent:defauldOutputFilename];
-        NSString* outputPath = firstNotNilParameter(firstNotNilParameter(args[@"o"], args[@"output"]), defaultOutput);
-        
+        NSString* defaultOutput = [[storyboardPath stringByDeletingLastPathComponent] stringByAppendingPathComponent:defaultOutputFilename];
+        NSString* outputPath = firstNotNilParameter(args[@"o"], args[@"output"]);
+        outputPath = firstNotNilParameter([outputPath stringByAppendingPathComponent:defaultOutputFilename], defaultOutput);
+
         NSError* error = nil;
         SSGParser* parser = [SSGParser parserForStoryboard:storyboardPath error:&error];
         
@@ -91,7 +92,7 @@ int main(int argc, const char * argv[])
             return EXIT_FAILURE;
         }
         
-        printf("generate %s.h\n", [defauldOutputFilename cStringUsingEncoding:NSUTF8StringEncoding]);
+        printf("generate %s.h\n", [defaultOutputFilename cStringUsingEncoding:NSUTF8StringEncoding]);
         
         error =  [generator writeM:outputPath];
         if ( error )
@@ -100,7 +101,7 @@ int main(int argc, const char * argv[])
             return EXIT_FAILURE;
         }
         
-        printf("generate %s.m\n", [defauldOutputFilename cStringUsingEncoding:NSUTF8StringEncoding]);
+        printf("generate %s.m\n", [defaultOutputFilename cStringUsingEncoding:NSUTF8StringEncoding]);
     }
     return EXIT_SUCCESS;
 }
