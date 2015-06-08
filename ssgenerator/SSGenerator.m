@@ -7,14 +7,19 @@
 //
 
 #import "SSGenerator.h"
+
 #import "SSGController.h"
 
+
 @interface SSGenerator ()
+
+#pragma mark — Properties
 
 @property (strong, nonatomic) NSString* storyboard;
 @property (strong, nonatomic) NSArray* controllers;
 
 @end
+
 
 @implementation SSGenerator
 
@@ -39,7 +44,21 @@
     return [[self alloc] initWithStoryboard:storyboard controllers:controllers];
 }
 
+
 #pragma mark - Lines for *.h file
+
+-(NSString*)initialViewControllerH
+{
+    NSString *storyBoardName = [self.storyboard stringByDeletingPathExtension];
+
+    NSString *initialViewController = [NSString stringWithFormat:
+            @"@interface UIStoryboard (%@)\n"
+             "\n"
+             "+ (UIViewController *)initialViewControllerFrom%@;\n"
+             "\n"
+             "@end\n\n", storyBoardName, storyBoardName];
+    return initialViewController;
+}
 
 -(NSString*)segueForControllerH:( SSGController* )controller
 {
@@ -47,7 +66,7 @@
 
     NSMutableArray* segueLines = [NSMutableArray arrayWithCapacity:controller.segue.count];
     for ( NSString* segue in controller.segue )
-        [segueLines addObject:[NSString stringWithFormat:@"   __unsafe_unretained NSString* %@;", segue]];
+        [segueLines addObject:[NSString stringWithFormat:@"   __unsafe_unretained NSString *%@;", segue]];
     
     id segueTypedef = [NSString stringWithFormat:@""
                       "extern const struct %@ {\n"
@@ -58,13 +77,13 @@
                       , controllerSegueType];
 
     id category = [NSString stringWithFormat:@"\n"
-                           "@interface %@ ( StoryboardSegue )\n"
+                           "@interface %@ (StoryboardSegue)\n"
                            "\n"
                            "@property (assign, nonatomic, readonly) struct %@ segue;\n"
                            "\n"
-                           "+(struct %@)segue;\n"
+                           "+ (struct %@)segue;\n"
                            "\n"
-                           @"@end\n\n\n"
+                           @"@end\n\n"
                            , [self controllerClass:controller]
                            , controllerSegueType
                            , controllerSegueType];
@@ -78,7 +97,7 @@
     
     NSMutableArray* cellLines = [NSMutableArray arrayWithCapacity:controller.cell.count];
     for ( NSString* cell in controller.cell )
-        [cellLines addObject:[NSString stringWithFormat:@"   __unsafe_unretained NSString* %@;", cell]];
+        [cellLines addObject:[NSString stringWithFormat:@"   __unsafe_unretained NSString *%@;", cell]];
     
     id segueTypedef = [NSString stringWithFormat:@""
                         "extern const struct %@ {\n"
@@ -89,11 +108,11 @@
                         , controllerCellType];
     
     id category = [NSString stringWithFormat:@"\n"
-                   "@interface %@ ( StoryboardCell )\n"
+                   "@interface %@ (StoryboardCell)\n"
                    "\n"
                    "@property (assign, nonatomic, readonly) struct %@ cell;\n"
                    "\n"
-                   "+(struct %@)cell;\n"
+                   "+ (struct %@)cell;\n"
                    "\n"
                    @"@end\n\n"
                    , [self controllerClass:controller]
@@ -108,26 +127,30 @@
     NSMutableArray* constructors = [NSMutableArray arrayWithCapacity:controller.storyboardIdentifiers.count];
     for ( NSString* storyboardIdentifier in controller.storyboardIdentifiers )
     {
-        [constructors addObject:[NSString stringWithFormat:@"+(instancetype)controller%@;\n", storyboardIdentifier]];
+        [constructors addObject:[NSString stringWithFormat:@"+ (instancetype)controller%@;\n", storyboardIdentifier]];
     }
     
-    return [NSString stringWithFormat:@"@interface %@ ( StoryboardIdentifiers )\n\n"
+    return [NSString stringWithFormat:@"@interface %@ (StoryboardIdentifiers)\n\n"
             "%@\n"
-            "@end\n"
+            "@end\n\n"
             , [self controllerClass:controller],
             [constructors componentsJoinedByString:@"\n"]];
 }
+
 
 #pragma mark -
 
 -(NSError*)writeH:( NSString* )file
 {
-    NSMutableArray* controllers = [NSMutableArray arrayWithObject:@"#import <UIKit/UIKit.h>\n\n"];
-    
+    NSMutableArray *controllers = [NSMutableArray array];
+    [controllers addObject:@"@import UIKit;\n"];
+
+    [controllers addObject:[self initialViewControllerH]];
+
     for ( SSGController* controller in self.controllers )
     {
         if ( controller.customClass && ( controller.segue.count || controller.cell.count || controller.storyboardIdentifiers.count) )
-            [controllers addObject:[NSString stringWithFormat:@"#import \"%@.h\"\n\n", controller.customClass]];
+            [controllers addObject:[NSString stringWithFormat:@"#import \"%@.h\"", controller.customClass]];
         
         if ( controller.segue.count )
             [controllers addObject:[self segueForControllerH:controller]];
@@ -140,14 +163,35 @@
     }
     
     NSError* error = nil;
-    [[controllers componentsJoinedByString:@"\n\n"] writeToFile:[file stringByAppendingString:@".h"]
-                                                     atomically:YES
-                                                       encoding:NSUTF8StringEncoding
-                                                          error:&error];
+        [[controllers componentsJoinedByString:@"\n\n"] writeToFile:[file stringByAppendingString:@".h"]
+                                                         atomically:YES
+                                                           encoding:NSUTF8StringEncoding
+                                                              error:&error];
+
     return error;
 }
 
+
 #pragma mark - Lines for *.m file
+
+-(NSString*)initialViewControllerM
+{
+    NSString *storyBoardName = [self.storyboard stringByDeletingPathExtension];
+
+    NSString *initialViewController = [NSString stringWithFormat:
+        @"@implementation UIStoryboard (%@)\n"
+         "\n"
+         "+ (UIViewController *)initialViewControllerFrom%@\n"
+         "{\n"
+         "   UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@\"%@\" bundle:nil];\n"
+         "\n"
+         "   return (UIViewController *)[storyboard instantiateInitialViewController];\n"
+         "}\n"
+         "\n"
+         "@end\n\n", storyBoardName, storyBoardName, storyBoardName];
+
+    return initialViewController;
+}
 
 -(NSString*)segueForControllerM:( SSGController* )controller
 {
@@ -240,23 +284,25 @@
             , [constructors componentsJoinedByString:@"\n\n"]];
 }
 
+
 #pragma mark -
 
 -(NSError*)writeM:( NSString* )file
 {
-    id header = [NSString stringWithFormat:@"#import \"\%@.h\"", [file lastPathComponent]];
+    id header = [NSString stringWithFormat:@"#import \"%@.h\"\n", [file lastPathComponent]];
 
-    NSMutableArray* controllers = [NSMutableArray arrayWithObject:header];
+    NSMutableArray *controllers = [NSMutableArray array];
+    [controllers addObject:header];
+
+    [controllers addObject:[self initialViewControllerM]];
+
     for (SSGController* controller in self.controllers)
     {
-        if ( controller.segue.count )
-            [controllers addObject:[self segueForControllerM:controller]];
+        if (controller.segue.count) [controllers addObject:[self segueForControllerM:controller]];
         
-        if ( controller.cell.count )
-            [controllers addObject:[self cellForControllerM:controller]];
+        if (controller.cell.count) [controllers addObject:[self cellForControllerM:controller]];
         
-        if ( controller.storyboardIdentifiers.count )
-            [controllers addObject:[self constructorsForControllerM:controller]];
+        if (controller.storyboardIdentifiers.count) [controllers addObject:[self constructorsForControllerM:controller]];
     }
 
     NSError* error = nil;
@@ -264,6 +310,7 @@
                                                      atomically:YES
                                                        encoding:NSUTF8StringEncoding
                                                           error:&error];
+
     return error;
 }
 

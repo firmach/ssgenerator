@@ -6,11 +6,13 @@
 //  Copyright (c) 2013 Max Lunin. All rights reserved.
 //
 
-#import <Foundation/Foundation.h>
+#import "Foundation/Foundation.h"
+
 
 @interface SSGenerator : NSObject
 
 @property (strong, nonatomic) NSString* controllerPrefix;
+
 
 +(instancetype)generatorForStoryboard:( NSString* )storyboard controllers:( NSArray* )controllers;
 
