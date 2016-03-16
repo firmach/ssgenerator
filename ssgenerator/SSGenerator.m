@@ -9,6 +9,7 @@
 #import "SSGenerator.h"
 
 #import "SSGController.h"
+#import "SSCheckedFileWriter.h"
 
 
 @interface SSGenerator ()
@@ -161,12 +162,12 @@
         if ( controller.storyboardIdentifiers.count )
             [controllers addObject:[self constructorsForControllerH:controller]];
     }
-    
+
+    NSString *content = [controllers componentsJoinedByString:@"\n\n"];
+
+    SSCheckedFileWriter *writer = [SSCheckedFileWriter new];
     NSError* error = nil;
-        [[controllers componentsJoinedByString:@"\n\n"] writeToFile:[file stringByAppendingString:@".h"]
-                                                         atomically:YES
-                                                           encoding:NSUTF8StringEncoding
-                                                              error:&error];
+    [writer writeString:content toFile:[file stringByAppendingString:@".h"] error:&error];
 
     return error;
 }
@@ -305,11 +306,11 @@
         if (controller.storyboardIdentifiers.count) [controllers addObject:[self constructorsForControllerM:controller]];
     }
 
+    NSString *content = [controllers componentsJoinedByString:@"\n\n"];
+
+    SSCheckedFileWriter *writer = [SSCheckedFileWriter new];
     NSError* error = nil;
-    [[controllers componentsJoinedByString:@"\n\n"] writeToFile:[file stringByAppendingString:@".m"]
-                                                     atomically:YES
-                                                       encoding:NSUTF8StringEncoding
-                                                          error:&error];
+    [writer writeString:content toFile:[file stringByAppendingString:@".m"] error:&error];
 
     return error;
 }
