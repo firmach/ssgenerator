@@ -11,12 +11,11 @@
 
 @interface SSGenerator : NSObject
 
-@property (strong, nonatomic) NSString* controllerPrefix;
+@property (nonatomic, strong) NSString *controllerPrefix;
 
++ (instancetype)generatorForStoryboard:(NSString *)storyboard controllers:(NSArray *)controllers;
 
-+(instancetype)generatorForStoryboard:( NSString* )storyboard controllers:( NSArray* )controllers;
-
--(NSError*)writeH:( NSString* )file;
--(NSError*)writeM:( NSString* )file;
+- (NSError *)writeH:(NSString *)file;
+- (NSError *)writeM:(NSString *)file;
 
 @end

@@ -12,6 +12,7 @@
 		5044B97E1775B55300B99E02 /* SSGController.m in Sources */ = {isa = PBXBuildFile; fileRef = 5044B9791775B55300B99E02 /* SSGController.m */; };
 		5044B97F1775B55300B99E02 /* SSGenerator.m in Sources */ = {isa = PBXBuildFile; fileRef = 5044B97B1775B55300B99E02 /* SSGenerator.m */; };
 		5044B9801775B55300B99E02 /* SSGParser.m in Sources */ = {isa = PBXBuildFile; fileRef = 5044B97D1775B55300B99E02 /* SSGParser.m */; };
+		B2FA8A116AC9D5946DB91662 /* SSCheckedFileWriter.m in Sources */ = {isa = PBXBuildFile; fileRef = B2FA8DB735D404988EA6000F /* SSCheckedFileWriter.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -29,6 +30,8 @@
 		5044B97D1775B55300B99E02 /* SSGParser.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SSGParser.m; sourceTree = "<group>"; };
 		508034B11778F7E800BD34AF /* ssgenerator.rb */ = {isa = PBXFileReference; lastKnownFileType = text.script.ruby; path = ssgenerator.rb; sourceTree = "<group>"; };
 		8690947873F44645A4494CCF /* libPods.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libPods.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		B2FA826063877F81DB651F95 /* SSCheckedFileWriter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SSCheckedFileWriter.h; sourceTree = "<group>"; };
+		B2FA8DB735D404988EA6000F /* SSCheckedFileWriter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SSCheckedFileWriter.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -83,6 +86,8 @@
 				5044B97B1775B55300B99E02 /* SSGenerator.m */,
 				5044B96C1775B3D000B99E02 /* main.m */,
 				5044B96E1775B3D000B99E02 /* Supporting Files */,
+				B2FA8DB735D404988EA6000F /* SSCheckedFileWriter.m */,
+				B2FA826063877F81DB651F95 /* SSCheckedFileWriter.h */,
 			);
 			path = ssgenerator;
 			sourceTree = "<group>";
@@ -121,7 +126,7 @@
 		5044B95E1775B3D000B99E02 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastUpgradeCheck = 0460;
+				LastUpgradeCheck = 0720;
 				ORGANIZATIONNAME = "Max Lunin";
 			};
 			buildConfigurationList = 5044B9611775B3D000B99E02 /* Build configuration list for PBXProject "ssgenerator" */;
@@ -167,6 +172,7 @@
 				5044B97E1775B55300B99E02 /* SSGController.m in Sources */,
 				5044B97F1775B55300B99E02 /* SSGenerator.m in Sources */,
 				5044B9801775B55300B99E02 /* SSGParser.m in Sources */,
+				B2FA8A116AC9D5946DB91662 /* SSCheckedFileWriter.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -177,7 +183,6 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
-				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
 				CLANG_CXX_LIBRARY = "libc++";
 				CLANG_ENABLE_OBJC_ARC = YES;
@@ -187,6 +192,7 @@
 				CLANG_WARN_INT_CONVERSION = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
+				ENABLE_TESTABILITY = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_ENABLE_OBJC_EXCEPTIONS = YES;
@@ -210,7 +216,6 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
-				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
 				CLANG_CXX_LIBRARY = "libc++";
 				CLANG_ENABLE_OBJC_ARC = YES;
